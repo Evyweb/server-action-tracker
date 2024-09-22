@@ -1,5 +1,8 @@
 import {Project} from "ts-morph";
 import {NextJSFile} from "../src/NextJSFile";
+import {createServerActionFile} from "./factories/createServerActionFile";
+import {createBasicFileWithFunction} from "./factories/createBasicFileWithFunction";
+import {createClientFileWithFunction} from "./factories/createClientFileWithFunction";
 
 describe('NextJSFile', () => {
     let project: Project;
@@ -10,60 +13,34 @@ describe('NextJSFile', () => {
 
     describe('When the file contains the "use server" directive at the top of the file', () => {
         it('should be a server action', () => {
-            // Arrange
-            const sourceFile = project.createSourceFile("serverAction.ts", `
-                "use server";
-                export const serverAction = () => {
-                    console.log('server action');
-                }
-            `);
-
-            const nextJSFile = new NextJSFile(sourceFile);
-
-            // Act
-            const result = nextJSFile.isServerAction();
-
-            // Assert
-            expect(result).toBe(true);
+            const sourceFile = createServerActionFile(project, "serverAction");
+            expectFileToBeServerAction(sourceFile.getFilePath());
         });
     });
 
     describe('When the file does not contain the "use server" directive at the top of the file', () => {
         it('should not be a server action', () => {
-            // Arrange
-            const sourceFile = project.createSourceFile("notServerAction.ts", `
-                export const notServerAction = () => {
-                    console.log('not a server action');
-                }
-            `);
-
-            const nextJSFile = new NextJSFile(sourceFile);
-
-            // Act
-            const result = nextJSFile.isServerAction();
-
-            // Assert
-            expect(result).toBe(false);
+            const sourceFile = createBasicFileWithFunction(project, "notServerAction");
+            expectFileNotToBeServerAction(sourceFile.getFilePath());
         });
     });
 
     describe('When the file has an other directive at the top of the file', () => {
         it('should not be a server action', () => {
-            // Arrange
-            const sourceFile = project.createSourceFile("notServerAction.ts", `
-                "use client";
-                export const notServerAction = () => {
-                    console.log('not a server action');
-                }
-            `);
-
-            const nextJSFile = new NextJSFile(sourceFile);
-
-            // Act
-            const result = nextJSFile.isServerAction();
-
-            // Assert
-            expect(result).toBe(false);
+            const sourceFile = createClientFileWithFunction(project, "notServerAction");
+            expectFileNotToBeServerAction(sourceFile.getFilePath());
         });
     });
+
+    function expectFileToBeServerAction(fileName: string) {
+        const sourceFile = project.getSourceFileOrThrow(fileName);
+        const nextJSFile = new NextJSFile(sourceFile);
+        expect(nextJSFile.isServerAction()).toBe(true);
+    }
+
+    function expectFileNotToBeServerAction(fileName: string) {
+        const sourceFile = project.getSourceFileOrThrow(fileName);
+        const nextJSFile = new NextJSFile(sourceFile);
+        expect(nextJSFile.isServerAction()).toBe(false);
+    }
 });

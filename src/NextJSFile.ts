@@ -3,6 +3,7 @@ import {SourceFile, Statement, SyntaxKind} from "ts-morph";
 export class NextJSFile {
 
     private readonly USE_SERVER_DIRECTIVE = 'use server';
+
     private readonly sourceFile: SourceFile;
     private readonly statements: Statement[];
 
@@ -32,5 +33,9 @@ export class NextJSFile {
 
     private isUseServerDirective(literalValue: string): boolean {
         return literalValue === this.USE_SERVER_DIRECTIVE;
+    }
+
+    getFileName() {
+        return this.sourceFile.getBaseName();
     }
 }

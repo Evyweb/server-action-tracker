@@ -3,6 +3,7 @@ import {NextJSFile} from "../src/NextJSFile";
 import {createServerActionFile} from "./factories/createServerActionFile";
 import {createBasicFileWithFunction} from "./factories/createBasicFileWithFunction";
 import {createClientFileWithFunction} from "./factories/createClientFileWithFunction";
+import {createEmptyFile} from "./factories/createEmptyFile";
 
 describe('NextJSFile', () => {
     let project: Project;
@@ -28,6 +29,13 @@ describe('NextJSFile', () => {
     describe('When the file has an other directive at the top of the file', () => {
         it('should not be a server action', () => {
             const sourceFile = createClientFileWithFunction(project, "notServerAction");
+            expectFileNotToBeServerAction(sourceFile.getFilePath());
+        });
+    });
+
+    describe('When the file is empty', () => {
+        it('should not be a server action', () => {
+            const sourceFile = createEmptyFile(project, "emptyFile");
             expectFileNotToBeServerAction(sourceFile.getFilePath());
         });
     });

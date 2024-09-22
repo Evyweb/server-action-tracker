@@ -13,7 +13,15 @@ export class NextJSFile {
     }
 
     isServerAction(): boolean {
-        return this.hasUseServerDirectiveOnTopOfFile();
+        return this.isNotEmptyFile() && this.hasUseServerDirectiveOnTopOfFile();
+    }
+
+    getFileName() {
+        return this.sourceFile.getBaseName();
+    }
+
+    private isNotEmptyFile() {
+        return this.statements.length > 0;
     }
 
     private hasUseServerDirectiveOnTopOfFile() {
@@ -33,9 +41,5 @@ export class NextJSFile {
 
     private isUseServerDirective(literalValue: string): boolean {
         return literalValue === this.USE_SERVER_DIRECTIVE;
-    }
-
-    getFileName() {
-        return this.sourceFile.getBaseName();
     }
 }

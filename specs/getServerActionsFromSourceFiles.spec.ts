@@ -1,8 +1,7 @@
 import {Project} from "ts-morph";
-import {ServerActionScanner} from "../src/ServerActionScanner";
-import {ServerAction} from "../src/ServerAction";
+import {getServerActionsFromSourceFiles} from "../src/getServerActionsFromSourceFiles";
 
-describe('ServerActionScanner', () => {
+describe('getServerActionsFromSourceFiles', () => {
     it('should list all files containing server actions', () => {
         // Arrange
         const project = new Project({useInMemoryFileSystem: true});
@@ -29,17 +28,23 @@ describe('ServerActionScanner', () => {
                 console.log('clientFunction');
             }
         `);
+        project.createSourceFile('thirdServerAction.tsx', `
+            "use client";
+            const thirdServerAction = () => {
+                "use server";
+                console.log('thirdServerAction');
+            }
+        `);
         project.createSourceFile('emptyFile.ts', '');
 
-        const scanner = new ServerActionScanner(project.getSourceFiles());
-
         // Act
-        const result = scanner.getServerActions();
+        const result = getServerActionsFromSourceFiles(project.getSourceFiles());
 
         // Assert
         expect(result).toEqual([
-            new ServerAction('firstServerAction.ts', 'firstServerAction'),
-            new ServerAction('secondServerAction.ts', 'secondServerAction')
+            {fileName: 'firstServerAction.ts', functionName: 'firstServerAction'},
+            {fileName: 'secondServerAction.ts', functionName: 'secondServerAction'},
+            {fileName: 'thirdServerAction.tsx', functionName: 'thirdServerAction'},
         ]);
     });
 });

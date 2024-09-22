@@ -1,12 +1,9 @@
 import {Project} from "ts-morph";
-import {NextJSFile} from "../src/NextJSFile";
 import {describe} from "vitest";
-import {ServerAction} from "../src/ServerAction";
+import {extractServerActions} from "../src/extractServerActions";
 
-describe('NextJSFile', () => {
+describe('extractServerActions', () => {
     let project: Project;
-
-    const NO_CONTENT = '';
 
     beforeEach(() => {
         project = new Project({useInMemoryFileSystem: true});
@@ -21,26 +18,29 @@ describe('NextJSFile', () => {
                     console.log('serverAction1');
                 }
                 
-                export function serverAction2() {
+                export const serverAction2 = () => {
                     console.log('serverAction2');
                 }
+                
+                export const serverAction3 = () => console.log('serverAction3');
+                
+                export const test = 'nothing';
             `);
 
-            const nextJSFile = new NextJSFile(sourceFile);
-
             // Act
-            const serverActions = nextJSFile.extractServerActions();
+            const serverActions = extractServerActions(sourceFile);
 
             // Assert
             expect(serverActions).toEqual([
-                new ServerAction("serverAction.ts", "serverAction1"),
-                new ServerAction("serverAction.ts", "serverAction2")
+                {fileName: 'serverAction.ts', functionName: 'serverAction1'},
+                {fileName: 'serverAction.ts', functionName: 'serverAction2'},
+                {fileName: 'serverAction.ts', functionName: 'serverAction3'},
             ]);
         });
     });
 
     describe('When the file does not contain the "use server" directive at the top of the file', () => {
-        describe('When exported functions inside the file has the "use server" directive', () => {
+        describe('When functions inside the file has the "use server" directive', () => {
             it('should add the functions to the list of server actions', () => {
                 // Arrange
                 const sourceFile = project.createSourceFile('serverAction.ts', `       
@@ -53,16 +53,25 @@ describe('NextJSFile', () => {
                         "use server";
                         console.log('serverAction2');
                     }
+                    
+                    export function AnyFunction() {
+                        const serverAction3 = () => {
+                            "use server";
+                            console.log('serverAction3');
+                        }
+                    }
+                    
+                    export const nothing = () => {};
                 `);
-                const nextJSFile = new NextJSFile(sourceFile);
 
                 // Act
-                const serverActions = nextJSFile.extractServerActions();
+                const serverActions = extractServerActions(sourceFile);
 
                 // Assert
                 expect(serverActions).toEqual([
-                    new ServerAction("serverAction.ts", "serverAction1"),
-                    new ServerAction("serverAction.ts", "serverAction2")
+                    {fileName: 'serverAction.ts', functionName: 'serverAction1'},
+                    {fileName: 'serverAction.ts', functionName: 'serverAction2'},
+                    {fileName: 'serverAction.ts', functionName: 'serverAction3'},
                 ]);
             });
         });
@@ -75,10 +84,9 @@ describe('NextJSFile', () => {
                         console.log('notServerAction');
                     }
                 `);
-                const nextJSFile = new NextJSFile(sourceFile);
 
                 // Act
-                const serverActions = nextJSFile.extractServerActions();
+                const serverActions = extractServerActions(sourceFile);
 
                 // Assert
                 expect(serverActions).toHaveLength(0);
@@ -95,10 +103,9 @@ describe('NextJSFile', () => {
                     console.log('notServerAction');
                 }
             `);
-            const nextJSFile = new NextJSFile(sourceFile);
 
             // Act
-            const serverActions = nextJSFile.extractServerActions();
+            const serverActions = extractServerActions(sourceFile);
 
             // Assert
             expect(serverActions).toHaveLength(0);
@@ -108,11 +115,10 @@ describe('NextJSFile', () => {
     describe('When the file is empty', () => {
         it('should not add anything to the list of server actions', () => {
             // Arrange
-            const sourceFile = project.createSourceFile('emptyFile.ts', NO_CONTENT);
-            const nextJSFile = new NextJSFile(sourceFile);
+            const sourceFile = project.createSourceFile('emptyFile.ts', '');
 
             // Act
-            const serverActions = nextJSFile.extractServerActions();
+            const serverActions = extractServerActions(sourceFile);
 
             // Assert
             expect(serverActions).toHaveLength(0);

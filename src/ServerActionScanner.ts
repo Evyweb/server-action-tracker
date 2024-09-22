@@ -1,5 +1,6 @@
 import {SourceFile} from "ts-morph";
 import {NextJSFile} from "./NextJSFile";
+import {ServerAction} from "./ServerAction";
 
 export class ServerActionScanner {
 
@@ -9,10 +10,10 @@ export class ServerActionScanner {
         this.sourceFiles = sourceFiles;
     }
 
-    getServerActions(): string[] {
+    getServerActions(): ServerAction[] {
         return this.sourceFiles
             .map(sourceFile => new NextJSFile(sourceFile))
-            .filter(nextJSFile => nextJSFile.isServerAction())
-            .map(nextJSFile => nextJSFile.getFileName());
+            .map(nextJSFile => nextJSFile.extractServerActions())
+            .reduce((acc, serverActions) => acc.concat(serverActions), []);
     }
 }

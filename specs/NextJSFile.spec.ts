@@ -1,6 +1,6 @@
 import {Project} from "ts-morph";
 import {NextJSFile} from "../src/NextJSFile";
-import {createServerActionFile} from "./factories/createServerActionFile";
+import {createFileWithUseServerOnTop} from "./factories/createFileWithUseServerOnTop";
 import {createBasicFileWithFunction} from "./factories/createBasicFileWithFunction";
 import {createClientFileWithFunction} from "./factories/createClientFileWithFunction";
 import {createEmptyFile} from "./factories/createEmptyFile";
@@ -14,7 +14,7 @@ describe('NextJSFile', () => {
 
     describe('When the file contains the "use server" directive at the top of the file', () => {
         it('should be a server action', () => {
-            const sourceFile = createServerActionFile(project, "serverAction");
+            const sourceFile = createFileWithUseServerOnTop(project, "serverAction");
             expectFileToBeServerAction(sourceFile.getFilePath());
         });
     });

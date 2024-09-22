@@ -1,5 +1,5 @@
 import {Project} from "ts-morph";
-import {createServerActionFile} from "./factories/createServerActionFile";
+import {createFileWithUseServerOnTop} from "./factories/createFileWithUseServerOnTop";
 import {createBasicFileWithFunction} from "./factories/createBasicFileWithFunction";
 import {createClientFileWithFunction} from "./factories/createClientFileWithFunction";
 import {ServerActionScanner} from "../src/ServerActionScanner";
@@ -9,8 +9,8 @@ describe('ServerActionScanner', () => {
     it('should list all files containing server actions', () => {
         // Arrange
         const project = new Project({useInMemoryFileSystem: true});
-        createServerActionFile(project, "firstServerAction");
-        createServerActionFile(project, "secondServerAction");
+        createFileWithUseServerOnTop(project, "firstServerAction");
+        createFileWithUseServerOnTop(project, "secondServerAction");
         createBasicFileWithFunction(project, "notServerAction");
         createClientFileWithFunction(project, "clientFunction");
         createEmptyFile(project, "emptyFile");

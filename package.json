@@ -1,5 +1,5 @@
 {
-  "name": "@evyweb/node-script-template",
+  "name": "@evyweb/next-server-action-scan",
   "version": "1.0.0",
   "description": "List all your server actions of your NextJS project",
   "main": "dist/index.js",
@@ -9,7 +9,7 @@
     "dist/"
   ],
   "bin": {
-    "next-server-action-scan": "./bin/next-server-action-scan.js"
+    "next-server-action-scan": "dist/index.js"
   },
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts",

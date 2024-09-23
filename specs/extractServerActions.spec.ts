@@ -24,6 +24,20 @@ describe('extractServerActions', () => {
                 
                 export const serverAction3 = () => console.log('serverAction3');
                 
+                export const serverAction4 = ServerAction<CreateCharacterActionRequest, CreateCharacterActionResponse>({
+                    request: {
+                        schema: CreateCharacterActionRequest.schema,
+                    },
+                    handler: async ({name}): Promise<CreateCharacterActionResponse> => {
+                        const command = new CreateCharacterCommand(name);
+                
+                        const commandBus = inject<Bus<Command>>(DI.CommandBus);
+                        const newCharacterId = await commandBus.execute<string>(command);
+                
+                        return {newCharacterId};
+                    }
+                });
+                
                 export const test = 'nothing';
             `);
 
@@ -32,9 +46,10 @@ describe('extractServerActions', () => {
 
             // Assert
             expect(serverActions).toEqual([
-                {fileName: 'serverAction.ts', functionName: 'serverAction1'},
-                {fileName: 'serverAction.ts', functionName: 'serverAction2'},
-                {fileName: 'serverAction.ts', functionName: 'serverAction3'},
+                {fileName: '/serverAction.ts', functionName: 'serverAction1'},
+                {fileName: '/serverAction.ts', functionName: 'serverAction2'},
+                {fileName: '/serverAction.ts', functionName: 'serverAction3'},
+                {fileName: '/serverAction.ts', functionName: 'serverAction4'},
             ]);
         });
     });
@@ -43,7 +58,7 @@ describe('extractServerActions', () => {
         describe('When functions inside the file has the "use server" directive', () => {
             it('should add the functions to the list of server actions', () => {
                 // Arrange
-                const sourceFile = project.createSourceFile('serverAction.ts', `       
+                const sourceFile = project.createSourceFile('src/serverAction.ts', `       
                     export function serverAction1() {
                         "use server";
                         console.log('serverAction1');
@@ -61,7 +76,9 @@ describe('extractServerActions', () => {
                         }
                     }
                     
-                    export const nothing = () => {};
+                    export const nothing1 = () => {};
+                    export const nothing2 = () => 5;
+                    export const nothing3 = function() {};
                 `);
 
                 // Act
@@ -69,9 +86,9 @@ describe('extractServerActions', () => {
 
                 // Assert
                 expect(serverActions).toEqual([
-                    {fileName: 'serverAction.ts', functionName: 'serverAction1'},
-                    {fileName: 'serverAction.ts', functionName: 'serverAction2'},
-                    {fileName: 'serverAction.ts', functionName: 'serverAction3'},
+                    {fileName: '/src/serverAction.ts', functionName: 'serverAction1'},
+                    {fileName: '/src/serverAction.ts', functionName: 'serverAction2'},
+                    {fileName: '/src/serverAction.ts', functionName: 'serverAction3'},
                 ]);
             });
         });

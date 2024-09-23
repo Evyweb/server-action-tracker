@@ -14,7 +14,7 @@ export function extractServerActions(sourceFile: SourceFile): ServerAction[] {
         return [];
     }
 
-    const fileName = sourceFile.getBaseName();
+    const fileName = sourceFile.getFilePath();
 
     const functionNames = hasUseServerDirectiveOnTopOfFile(sourceFile)
         ? getExportedFunctionNames(sourceFile)
@@ -24,12 +24,13 @@ export function extractServerActions(sourceFile: SourceFile): ServerAction[] {
 }
 
 function isEmptyFile(sourceFile: SourceFile): boolean {
-    return sourceFile.getStatements().length === 0;
+    const statements = sourceFile.getStatements();
+    return statements.length === 0;
 }
 
 function hasUseServerDirectiveOnTopOfFile(sourceFile: SourceFile): boolean {
-    const firstStatement = sourceFile.getStatements()[0];
-    return isUseServerDirectiveStatement(firstStatement);
+    const statements = sourceFile.getStatements();
+    return statements.some(isUseServerDirectiveStatement);
 }
 
 function isUseServerDirectiveStatement(statement: Statement): boolean {
@@ -55,7 +56,7 @@ function getFunctionName(node: Node): string | undefined {
 
     if (Node.isVariableDeclaration(node)) {
         const initializer = node.getInitializer();
-        if (initializer && (Node.isArrowFunction(initializer) || Node.isFunctionExpression(initializer))) {
+        if (initializer && (Node.isArrowFunction(initializer) || Node.isFunctionExpression(initializer) || Node.isCallExpression(initializer))) {
             return node.getName();
         }
     }
@@ -91,12 +92,18 @@ function getFunctionNameIfContainsDirective(node: Node): string | undefined {
 function hasUseServerDirectiveInBody(
     functionNode: FunctionDeclaration | ArrowFunction | FunctionExpression
 ): boolean {
-    const body = functionNode.getBody()!;
+    const body = functionNode.getBody();
+
+    if (!body || !body.isKind(SyntaxKind.Block)) {
+        return false;
+    }
+
     const bodyBlock = body.asKind(SyntaxKind.Block)!;
-    const firstStatement = bodyBlock.getStatements()[0];
-    return firstStatement ? isUseServerDirectiveStatement(firstStatement) : false;
+    const statements = bodyBlock.getStatements();
+
+    return statements.some(isUseServerDirectiveStatement);
 }
 
 function createServerActions(fileName: string, functionNames: string[]): ServerAction[] {
-    return functionNames.map(functionName => ({fileName, functionName}));
+    return functionNames.map(functionName => ({ fileName, functionName }));
 }

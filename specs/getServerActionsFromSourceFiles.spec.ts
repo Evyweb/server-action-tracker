@@ -42,9 +42,9 @@ describe('getServerActionsFromSourceFiles', () => {
 
         // Assert
         expect(result).toEqual([
-            {fileName: 'firstServerAction.ts', functionName: 'firstServerAction'},
-            {fileName: 'secondServerAction.ts', functionName: 'secondServerAction'},
-            {fileName: 'thirdServerAction.tsx', functionName: 'thirdServerAction'},
+            {fileName: '/firstServerAction.ts', functionName: 'firstServerAction'},
+            {fileName: '/secondServerAction.ts', functionName: 'secondServerAction'},
+            {fileName: '/thirdServerAction.tsx', functionName: 'thirdServerAction'},
         ]);
     });
 });

@@ -1,1 +1,1 @@
-console.log('Hello World');
+export * from '../bin/next-server-action-scan';

@@ -8,19 +8,28 @@ import {
     SyntaxKind,
 } from "ts-morph";
 import {ServerAction} from "./types";
+import path from "node:path";
 
 export function extractServerActions(sourceFile: SourceFile): ServerAction[] {
     if (isEmptyFile(sourceFile)) {
         return [];
     }
 
-    const fileName = sourceFile.getFilePath();
+    const fileName = buildFilename(sourceFile);
 
     const functionNames = hasUseServerDirectiveOnTopOfFile(sourceFile)
         ? getExportedFunctionNames(sourceFile)
         : getFunctionNamesContainingUseServerDirective(sourceFile);
 
     return createServerActions(fileName, functionNames);
+}
+
+function buildFilename(sourceFile: SourceFile) {
+    const absoluteFilePath = sourceFile.getFilePath();
+    const projectRoot = process.cwd();
+    const relativeFilePath = path.relative(projectRoot, absoluteFilePath);
+    const importPath = relativeFilePath.replace(/\\/g, '/');
+    return `@/${importPath}`;
 }
 
 function isEmptyFile(sourceFile: SourceFile): boolean {

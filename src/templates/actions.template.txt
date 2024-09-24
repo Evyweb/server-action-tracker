@@ -1,0 +1,9 @@
+// This file is auto-generated. Do not edit directly.
+
+{{IMPORTS}}
+
+const actions = {
+    {{ACTIONS_MAP_ENTRIES}}
+};
+
+export default actions;

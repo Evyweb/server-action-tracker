@@ -7,6 +7,7 @@ describe('extractServerActions', () => {
 
     beforeEach(() => {
         project = new Project({useInMemoryFileSystem: true});
+        vi.spyOn(process, 'cwd').mockReturnValue('/');
     });
 
     describe('When the file contains the "use server" directive at the top of the file', () => {
@@ -46,10 +47,10 @@ describe('extractServerActions', () => {
 
             // Assert
             expect(serverActions).toEqual([
-                {fileName: '/serverAction.ts', functionName: 'serverAction1'},
-                {fileName: '/serverAction.ts', functionName: 'serverAction2'},
-                {fileName: '/serverAction.ts', functionName: 'serverAction3'},
-                {fileName: '/serverAction.ts', functionName: 'serverAction4'},
+                {fileName: '@/serverAction.ts', functionName: 'serverAction1'},
+                {fileName: '@/serverAction.ts', functionName: 'serverAction2'},
+                {fileName: '@/serverAction.ts', functionName: 'serverAction3'},
+                {fileName: '@/serverAction.ts', functionName: 'serverAction4'},
             ]);
         });
     });
@@ -86,9 +87,9 @@ describe('extractServerActions', () => {
 
                 // Assert
                 expect(serverActions).toEqual([
-                    {fileName: '/src/serverAction.ts', functionName: 'serverAction1'},
-                    {fileName: '/src/serverAction.ts', functionName: 'serverAction2'},
-                    {fileName: '/src/serverAction.ts', functionName: 'serverAction3'},
+                    {fileName: '@/src/serverAction.ts', functionName: 'serverAction1'},
+                    {fileName: '@/src/serverAction.ts', functionName: 'serverAction2'},
+                    {fileName: '@/src/serverAction.ts', functionName: 'serverAction3'},
                 ]);
             });
         });

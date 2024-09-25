@@ -6,7 +6,7 @@ export function getFilesFromPackageJson(): string[] {
 
     if (fs.existsSync(packageJsonPath)) {
         const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
-        return packageJson.nextServerActionScan?.files || [
+        return packageJson.serverActionTracker?.files || [
             "app/**/*.ts",
             "src/**/*.ts",
             "packages/**/*.ts",
@@ -15,5 +15,5 @@ export function getFilesFromPackageJson(): string[] {
         ];
     }
 
-    throw new Error("No package.json found or no file to include defined in nextServerActionScan options.");
+    throw new Error("No package.json found or no file to include defined in serverActionTracker options.");
 }

@@ -1,6 +1,6 @@
 {
-  "name": "@evyweb/next-server-action-scan",
-  "version": "1.0.0",
+  "name": "@evyweb/server-action-tracker",
+  "version": "0.0.0",
   "description": "A simple utility to list all your React Server Actions in your project.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",

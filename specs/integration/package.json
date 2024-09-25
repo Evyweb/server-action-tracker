@@ -6,7 +6,7 @@
   "author": "",
   "license": "ISC",
   "description": "",
-  "nextServerActionScan": {
+  "serverActionTracker": {
     "files": [
       "serverActions/**/*.ts",
       "serverActions/**/*.tsx"

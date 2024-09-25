@@ -1,6 +1,8 @@
 #  Server Action Tracker
 This is a simple server action tracker that logs all the potential server actions available in your application.
-![img.png](assets%2Fimg.png)
+
+![img.png](assets/img.png)
+
 ## Usage
 
 By default, it will search for server actions in these directories:

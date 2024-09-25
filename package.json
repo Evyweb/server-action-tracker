@@ -21,6 +21,9 @@
     "changeset:version": "npx changeset version",
     "publish:package": "npm run build && npx changeset publish"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "keywords": [],
   "author": "Evyweb",
   "license": "MIT",

@@ -8,7 +8,6 @@ export default defineConfig({
             exclude: ["src/**/**/types.ts"],
         },
         globals: true,
-        setupFiles: ['./vitest.setup.mts'],
         mockReset: true,
         clearMocks: true,
         restoreMocks: true,

@@ -1,6 +1,6 @@
 import {Project} from "ts-morph";
 import {describe} from "vitest";
-import {extractServerActions} from "../src/extractServerActions";
+import {extractServerActions} from "../../src/extractServerActions";
 
 describe('extractServerActions', () => {
     let project: Project;

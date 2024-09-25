@@ -75,11 +75,11 @@ function getFunctionName(node: Node): string | undefined {
 
 function getFunctionNamesContainingUseServerDirective(sourceFile: SourceFile): string[] {
     return sourceFile.getDescendants()
-        .map(getFunctionNameIfContainsDirective)
+        .map(extractFunctionNameFromNode)
         .filter((name): name is string => name !== undefined);
 }
 
-function getFunctionNameIfContainsDirective(node: Node): string | undefined {
+function extractFunctionNameFromNode(node: Node): string | undefined {
     if (Node.isFunctionDeclaration(node) && hasUseServerDirectiveInBody(node)) {
         return node.getName();
     }

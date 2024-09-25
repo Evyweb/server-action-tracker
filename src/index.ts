@@ -1,22 +1,11 @@
 #!/usr/bin/env node
-import { Project } from "ts-morph";
+import {Project} from "ts-morph";
 import * as path from "path";
-import * as fs from "fs";
 
-import {getServerActionsFromSourceFiles} from "./getServerActionsFromSourceFiles";
+import {extractServerActions} from "./extractServerActions";
+import {getFilesFromPackageJson} from "./utils";
 
-function getGlobsFromPackageJson(): string[] {
-    const packageJsonPath = path.resolve(process.cwd(), "package.json");
-
-    if (fs.existsSync(packageJsonPath)) {
-        const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
-        return packageJson.nextServerActionScan?.files || [];
-    }
-
-    throw new Error("No package.json found or no file to include defined in nextServerActionScan options.");
-}
-
-const filesToScan = getGlobsFromPackageJson();
+const filesToScan = getFilesFromPackageJson();
 const project = new Project({
     tsConfigFilePath: path.resolve(process.cwd(), "tsconfig.json"),
     skipAddingFilesFromTsConfig: true,
@@ -24,7 +13,7 @@ const project = new Project({
 
 project.addSourceFilesAtPaths(filesToScan);
 
-const serverActions = getServerActionsFromSourceFiles(project.getSourceFiles());
+const serverActions = project.getSourceFiles().map(extractServerActions).flat();
 
 console.log("Server actions found:");
 console.table(serverActions);

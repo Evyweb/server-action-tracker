@@ -1,6 +1,6 @@
 {
   "name": "@evyweb/server-action-tracker",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "A simple utility to list all your React Server Actions in your project.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
